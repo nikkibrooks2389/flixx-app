@@ -2,6 +2,7 @@ const global = {
     currentPage: window.location.pathname,
 };
 
+//Display Popular Movies
 const displayPopularMovies = async () => {
     const { results } = await fetchData('movie/popular');
     results.forEach(movie => {
@@ -9,10 +10,10 @@ const displayPopularMovies = async () => {
         div.classList.add('card');
         div.innerHTML = `  
     <a href="movie-details.html?id=${movie.id}">
-      ${movie.poster_path ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="card-img-top" alt="${movie.title}">` : `<img
+      ${movie.poster_path ? `<img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" class="card-img-top" alt="${movie.name}">` : `<img
       src="images/no-image.jpg"
       class="card-img-top"
-      alt="Movie Title"
+      alt="Movie name"
     />`}
     </a>
     <div class="card-body">
@@ -23,6 +24,33 @@ const displayPopularMovies = async () => {
     </div>
   `;
         document.querySelector('#popular-movies').
+            appendChild(div);
+    });
+
+};
+
+//Display Popular Shows
+const displayPopularShows = async () => {
+    const { results } = await fetchData('tv/popular');
+    results.forEach(show => {
+        const div = document.createElement('div');
+        div.classList.add('card');
+        div.innerHTML = `  
+    <a href="tv-details.html?id=${show.id}">
+      ${show.poster_path ? `<img src="https://image.tmdb.org/t/p/w500${show.poster_path}" class="card-img-top" alt="${show.name}">` : `<img
+      src="images/no-image.jpg"
+      class="card-img-top"
+      alt="show name"
+    />`}
+    </a>
+    <div class="card-body">
+      <h5 class="card-name">${show.name}</h5>
+      <p class="card-text">
+        <small class="text-muted">Air Date: ${show.first_air_date}</small>
+      </p>
+    </div>
+  `;
+        document.querySelector('#popular-shows').
             appendChild(div);
     });
 
@@ -70,7 +98,7 @@ const init = () => {
             displayPopularMovies();
             break;
         case '/shows.html':
-            console.log('Shows');
+            displayPopularShows()
             break;
         case '/movie-details.html':
             console.log('Movie Details');
