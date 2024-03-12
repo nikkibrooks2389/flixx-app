@@ -214,22 +214,55 @@ const displayBackgroundImage = (type, path) => {
 //Dispplay Slider 
 const displaySlider = async () => {
     const { results } = await fetchData('movie/now_playing');
-    results.forEach(result => {
+    results.forEach(movie => {
         const div = document.createElement('div');
         div.classList.add('swiper-slide');
         div.innerHTML = `  
-    <img src="https://image.tmdb.org/t/p/original${result.backdrop_path}" class="d-block w-
-    100" alt="${result.title}">
-    <div class="carousel-caption d-none d-md-block">
-        <h5>${result.title}</h5>
-        <p>${result.overview}</p>
-    </div>
+    <a href="movie-details.html?id=${movie.id}">
+    <img src="https://image.tmdb.org/t/p/w500${movie.poster_path}" alt="${movie.title}">
+    </a>
+    <h4 class="swiper-rating>
+    <i class="fas fa-star text-secondary"></i> ${movie.vote_average.toFixed(1)} /10
+    </h4>
     `;
-        document.querySelector('.carousel-inner').
+        document.querySelector('.swiper-wrapper').
             appendChild(div);
+
+        initSwiper();
     }
     );
-    document.querySelector('.carousel-item').classList.add('active');
+
+}
+
+const initSwiper = () => {
+    const swiper = new Swiper('.swiper', {
+        slidesPerView: 1,
+        spaceBetween: 30,
+        freeMode: true,
+        loop: true,
+        autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+        },
+        breakpoints: {
+            500: {
+                slidesPerView: 2,
+                spaceBetween: 20,
+            },
+            700: {
+                slidesPerView: 3,
+                spaceBetween: 40,
+            },
+            1024: {
+                slidesPerView: 4,
+                spaceBetween: 50,
+            },
+        },
+        pagination: {
+            el: '.swiper-pagination',
+            clickable: true,
+        },
+    });
 }
 
 
