@@ -1,5 +1,15 @@
 const global = {
     currentPage: window.location.pathname,
+    search: {
+        term: '',
+        type: '',
+        page: 1,
+        totalPages: 1
+    },
+    api: {
+        apiKey: 'd9fbd89a6404c8651bda8422b72df43b',
+        apiUrl: 'https://api.themoviedb.org/3/'
+    }
 };
 
 //Display Popular Movies
@@ -59,8 +69,23 @@ const displayPopularShows = async () => {
 
 //Fetch Data from TMDB API
 const fetchData = async (endpoint) => {
-    const API_KEY = 'd9fbd89a6404c8651bda8422b72df43b';
-    const API_URL = 'https://api.themoviedb.org/3/';
+    const API_KEY = global.api.apiKey;
+    const API_URL = global.api.apiUrl;
+
+    showSpinner();
+
+    const response = await fetch(`${API_URL}search/${global.search.type}?api_key=${API_KEY}&language=en-US&query=${global.search.term}&page=${global.search.page}`);
+    const data = await response.json();
+
+    hideSpinner();
+    return data;
+}
+
+//Make Rquest To Search
+const SearchApiData = async (endpoint) => {
+    const API_KEY = global.api.apiKey;
+    const API_URL = global.api.apiUrl;
+
     showSpinner();
 
     const response = await fetch(`${API_URL}${endpoint}?api_key=${API_KEY}&language=en-US`);
@@ -70,6 +95,8 @@ const fetchData = async (endpoint) => {
     return data;
 }
 
+
+
 const showSpinner = () => {
     document.querySelector('.spinner').classList.add("show")
 }
@@ -77,6 +104,8 @@ const showSpinner = () => {
 const hideSpinner = () => {
     document.querySelector('.spinner').classList.remove("show")
 }
+
+
 
 
 //Display Movie Details
@@ -210,6 +239,19 @@ const displayBackgroundImage = (type, path) => {
     }
 
 }
+//Search Movies / Shows
+const search = async () => {
+    const queryString = window.location.search;
+    const urlParams = new URLSearchParams(queryString);
+    global.search.type = urlParams.get('type');
+    global.search.term = urlParams.get('search-term');
+
+    if (global.search.term !== null && global.search.term !== '') {
+        const results = await fetchData(`search/${global.search.type}?query=${global.search.term}&page=${global.search.page}`);
+    } else {
+        document.querySelector('.search-term').textContent = 'All';
+    }
+}
 
 //Dispplay Slider 
 const displaySlider = async () => {
@@ -233,6 +275,7 @@ const displaySlider = async () => {
     );
 
 }
+
 
 const initSwiper = () => {
     const swiper = new Swiper('.swiper', {
@@ -278,6 +321,18 @@ const highlightActiveLink = () => {
     });
 }
 
+//Show Alert 
+const showAlert = (message, className) => {
+    const alertEl = document.createElement('div');
+    alertEl.classList.add('alert', className);
+    alertEl.appendChild(document.createTextNode(message));
+    document.querySelector('#alert').appendChild(alertEl);
+
+    setTimeout(() => {
+        alertEl.remove();
+    }, 3000);
+}
+
 const addCommasToNumber = (number) => {
     return number.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
 }
@@ -301,7 +356,7 @@ const init = () => {
             displayShowDetails();
             break;
         case '/search.html':
-            console.log('Search');
+            search()
             break;
         default:
             console.log('Page Not Found');
